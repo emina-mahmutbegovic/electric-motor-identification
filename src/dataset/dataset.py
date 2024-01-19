@@ -7,22 +7,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from util.util import get_file_path
-
-
-# Define the relative path to the file
-relative_path = '/Users/emina.mahmutbegovic/fakultet/Dataset_Electric_Motor.csv'
-
-# Create the absolute path by joining the current directory and the relative path
-file_path = get_file_path(relative_path)
 
 
 class Dataset:
 
     # Import data upon instance creation
-    def __init__(self):
-        print("Importing dataset...")
-
+    def __init__(self, file_path):
         self.data = pd.read_csv(file_path)
         self.reduced_data = self.data.iloc[::1000, :]
 

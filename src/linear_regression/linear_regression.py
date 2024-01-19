@@ -4,11 +4,12 @@
 # This software is the proprietary information of Emina Mahmutbegovic
 # Unauthorized sharing of this file is strictly prohibited
 import numpy as np
-from dataset.data_preprocessor import DataPreprocessor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import GridSearchCV
 from typing import Any
+
+from src.dataset.data_preprocessor import DataPreprocessor
 
 
 class LinearRegressionModel:
@@ -75,9 +76,7 @@ class LinearRegressionModel:
         return scores
 
     # Print scores
-    def print_scores(self, scores):
+    def format_scores_output(self, scores):
         scores = np.asarray(scores)
 
-        print('MSE:')
-        print(
-            f'Scores Mean: {scores.mean():.4f} A² +- {2 * scores.std():.4f} A²\nScores Min: {scores.min():.4f} A², Scores Max: {scores.max():.4f} A²')
+        return f'Scores Mean: {scores.mean():.4f} A² +- {2 * scores.std():.4f} A²\nScores Min: {scores.min():.4f} A²\nScores Max: {scores.max():.4f} A²'
