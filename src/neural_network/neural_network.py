@@ -56,7 +56,7 @@ class NeuralNetwork:
     def compile_model(self, metrics=['accuracy']):
         self.model.compile(optimizer=self.optimizer, loss=self.loss, metrics=metrics)
 
-    def train(self, label, epochs, batch_size, validation_data=None):
+    def train(self, epochs, batch_size, validation_data=None):
         # Define list for storing the history reports
         history_reports = []
 

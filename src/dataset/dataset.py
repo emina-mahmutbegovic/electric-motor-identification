@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
 class Dataset:
@@ -25,27 +26,47 @@ class Dataset:
         return self.data.head()
 
     # Plots element vector at time k and k-1
+    # def plot_element_vector(self):
+    #     # Plot n_k and n_1k
+    #     fig, axes = plt.subplots(1, 2, sharex=True, sharey=True)
+    #     for c, ax in zip(['n_k', 'n_1k'], axes.flatten()):
+    #         sns.countplot(x=c, data=self.data, palette="ch:.25", ax=ax)
     def plot_element_vector(self):
-        # Plot n_k and n_1k
-        fig, axes = plt.subplots(1, 2, sharex=True, sharey=True)
+        fig = plt.figure()
+        canvas = FigureCanvas(fig)
+
+        # Your plotting code
+        axes = fig.subplots(1, 2, sharex=True, sharey=True)
         for c, ax in zip(['n_k', 'n_1k'], axes.flatten()):
             sns.countplot(x=c, data=self.data, palette="ch:.25", ax=ax)
 
+        # Add heading to the plot
+        fig.suptitle('Element vector plot at time k and k-1', fontsize=12)
+
+        return canvas
+
     # Plot histogram against element vector
     def plot_histogram_nk(self):
-        analyzed_cols = [c for c in self.data if c != 'n_k']
+        fig = plt.figure(figsize=(20, 20))
+        canvas = FigureCanvas(fig)
 
+        analyzed_cols = [c for c in self.data if c != 'n_k']
         unique_elem_vecs = self.data['n_k'].nunique()
 
-        # Verify unique_elem_vecs
-        fig, axes = plt.subplots(nrows=unique_elem_vecs, ncols=len(analyzed_cols), sharex='col', figsize=(20, 20))
+        axes = fig.subplots(nrows=unique_elem_vecs, ncols=len(analyzed_cols), sharex='col')
 
         for k, df in self.reduced_data.groupby('n_k'):
             for i, c in enumerate(analyzed_cols):
                 sns.histplot(df[c], ax=axes[k - 1, i])
                 if i == 0:
                     axes[k - 1, i].set_ylabel(f'n_k = {k}')
+
         plt.tight_layout()
+
+        # Add heading to the plot
+        fig.suptitle('Histogram against element vector', fontsize=12)
+
+        return canvas
 
     # Describe rotor angle column
     def describe_rotor_angle_column(self):
@@ -60,6 +81,9 @@ class Dataset:
 
     # Plot correlation matrix
     def plot_correlation_matrix(self):
+        fig = plt.figure(figsize=(20, 20))
+        canvas = FigureCanvas(fig)
+
         corr = self.reduced_data.corr()
         # Generate a mask for the upper triangle
         mask = np.zeros_like(corr, dtype=bool)
@@ -68,6 +92,10 @@ class Dataset:
         # Generate a custom diverging colormap
         cmap = sns.diverging_palette(250, 15, s=75, l=40, n=9, center="dark", as_cmap=True)
 
-        plt.figure(figsize=(14, 14))
-        _ = sns.heatmap(corr, mask=mask, cmap=cmap, center=0,
+        sns.heatmap(corr, mask=mask, cmap=cmap, center=0,
                         square=True, linewidths=.5, cbar_kws={"shrink": .5})
+
+        # Add heading to the plot
+        fig.suptitle('Correlation matrix', fontsize=12)
+
+        return canvas

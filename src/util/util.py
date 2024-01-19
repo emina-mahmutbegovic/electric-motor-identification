@@ -91,7 +91,7 @@ def open_save_file_dialog(window):
     return filename
 
 
-# Upload csv util function
+# Upload csv style function
 def upload_csv(parent):
     options = QFileDialog.Options()
     options |= QFileDialog.ReadOnly
