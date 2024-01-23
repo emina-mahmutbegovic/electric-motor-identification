@@ -3,10 +3,10 @@
 # All rights reserved.
 # This software is the proprietary information of Emina Mahmutbegovic
 # Unauthorized sharing of this file is strictly prohibited
-from PyQt5.QtGui import QFontMetrics, QIcon
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QMainWindow, QLabel, QToolBar, QAction,
-    QStatusBar, QVBoxLayout, QPushButton, QWidget, QSizePolicy)
+    QStatusBar, QVBoxLayout, QPushButton, QWidget)
 from PyQt5.QtCore import Qt, QSize
 
 from src.ui.dataset.dataset_view import DatasetView
@@ -26,6 +26,8 @@ class MainWindow(QMainWindow):
         self.upload_button = None
         self.label = None
         self.layout = None
+
+        # Initialize message dialog
         self.message_dialog = MessageDialog(self)
 
         # Define dataset
@@ -43,6 +45,7 @@ class MainWindow(QMainWindow):
         set_background_image(self)
 
         self.layout = QVBoxLayout()
+        self.layout.addStretch(1)  # Add stretchable space at the top
 
         # Add a QLabel to display text
         self.label = QLabel("Welcome to the Electric Motor Identification Application!\n\n"
@@ -60,7 +63,9 @@ class MainWindow(QMainWindow):
         self.upload_button.setIcon(QIcon(get_file_path('src/ui/assets/power-plug.png')))
         self.upload_button.setIconSize(QSize(16, 16))  # Set the size of the icon
         self.upload_button.clicked.connect(self.upload_dataset)
-        self.layout.addWidget(self.upload_button)
+        self.layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
+
+        self.layout.addStretch(1)  # Add stretchable space at the bottom
 
         central_widget = QWidget()
         central_widget.setLayout(self.layout)
@@ -72,6 +77,7 @@ class MainWindow(QMainWindow):
         file_path = upload_csv(self)
 
         if file_path:
+            # Upload dataset
             self.dataset = Dataset(file_path)
             self.transformed_dataset = self.dataset.transform()
 
@@ -95,7 +101,7 @@ class MainWindow(QMainWindow):
     def show_toolbar_view(self):
         # Initialize toolbar
         toolbar = QToolBar("Main Toolbar")
-        self.addToolBar(Qt.LeftToolBarArea, toolbar)
+        self.addToolBar(toolbar)
 
         # Disable toolbar movement
         toolbar.setMovable(False)
