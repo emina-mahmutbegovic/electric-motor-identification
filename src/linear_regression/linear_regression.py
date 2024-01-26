@@ -28,7 +28,7 @@ class LinearRegressionModel:
         # Define list for storing the scores
         scores = []
 
-        # Train model and caluculate scores
+        # Train model and calculate scores
         for train_idx, test_idx in self.cv.split(self.X, self.y):
             ols = LinearRegression().fit(self.X[train_idx], self.y[train_idx])
             pred = ols.predict(self.X[test_idx])

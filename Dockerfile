@@ -15,12 +15,17 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-RUN pip install --upgrade pip setuptools wheel
+# Install required system dependencies
+RUN apt-get update && apt-get install -y qtbase5-dev \
+    qtchooser \
+    qt5-qmake \
+    qtbase5-dev-tools \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install any needed packages specified in requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Run main.py when the container launches
-CMD ["python", "./main.py"]
+CMD ["python3", "./main.py"]
 
 
