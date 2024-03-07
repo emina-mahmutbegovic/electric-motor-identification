@@ -4,6 +4,7 @@
 # This software is the proprietary information of Emina Mahmutbegovic
 # Unauthorized sharing of this file is strictly prohibited
 import re
+import time
 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QLabel, QMessageBox,
@@ -45,6 +46,7 @@ class NeuralNetworkView:
 
         self.loss_combo = None
         self.optimizer_combo = None
+        self.metrics_combo = None
         self.output_layer_activation_combo = None
         self.hidden_layer_activation_combo = None
         self.hidden_layer_arch_edit = None
@@ -156,8 +158,13 @@ class NeuralNetworkView:
 
         # Loss function
         self.loss_combo = QComboBox(self.parent)
-        self.loss_combo.addItems(["binary_crossentropy", "categorical_crossentropy", "mse"])
+        self.loss_combo.addItems(["binary_crossentropy", "categorical_crossentropy", "mean_squared_error", "mean_absolute_error", "mean_squared_logarithmic_error"])
         self.form_layout.addLayout(create_form_row("Loss Function:", self.loss_combo))
+
+        # Metrics
+        self.metrics_combo = QComboBox(self.parent)
+        self.metrics_combo.addItems(["mean_squared_error", "mean_absolute_error", "mean_absolute_percentage_error"])
+        self.form_layout.addLayout(create_form_row("Metrics:", self.metrics_combo))
 
         # Modify the widgets here to set text color and font
         for widget in self.configuration_tab_central_widget.findChildren(QLabel):
@@ -234,8 +241,11 @@ class NeuralNetworkView:
         loss = self.loss_combo.currentText()
         loss_and_optimizer = NeuralNetworkLossAndOptimizer(loss, optimizer)
 
+        metrics = self.metrics_combo.currentText()
+
         # Create NeuralNetwork model
-        self.neural_network = NeuralNetwork(shape, activation, loss_and_optimizer, self.parent.transformed_dataset)
+        self.neural_network = NeuralNetwork(shape, activation, loss_and_optimizer, metrics,
+                                            self.parent.transformed_dataset)
 
         # Build model
         self.built_neural_network_model = self.neural_network.build_model()
@@ -248,14 +258,22 @@ class NeuralNetworkView:
         self.neural_network.compile_model()
 
         try:
+            # Measure training time
+            start_time = time.time()
+
             # Train model
             history_reports = self.neural_network.train(int(self.epochs), int(self.batch_size))
+
+            end_time = time.time()
+            execution_time = end_time - start_time
 
         except Exception as e:
             self.parent.message_dialog.error(f"Error while training neural network: {e}")
         else:
             # Evaluate model
             eval_reports = self.neural_network.evaluate()
+
+            print(f"Training time: {execution_time}")
 
             # Download reports
             # Prompt report download

@@ -4,6 +4,8 @@
 # This software is the proprietary information of Emina Mahmutbegovic
 # Unauthorized sharing of this file is strictly prohibited
 import numpy as np
+import time
+
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import GridSearchCV
@@ -28,6 +30,9 @@ class LinearRegressionModel:
         # Define list for storing the scores
         scores = []
 
+        # Measure training time
+        start_time = time.time()
+
         # Train model and calculate scores
         for train_idx, test_idx in self.cv.split(self.X, self.y):
             ols = LinearRegression().fit(self.X[train_idx], self.y[train_idx])
@@ -35,6 +40,10 @@ class LinearRegressionModel:
             pred = self.ss_y.inverse_transform(pred)
             gtruth = self.ss_y.inverse_transform(self.y[test_idx])
             scores.append(mean_squared_error(pred, gtruth))
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Training time: {execution_time}")
 
         return scores
 
@@ -57,6 +66,9 @@ class LinearRegressionModel:
         # Step 4: Perform grid search
         grid_search = GridSearchCV(model, param_grid, scoring='neg_mean_squared_error', cv=self.n_splits)
 
+        # Measure training time
+        start_time = time.time()
+
         # Train model and caluculate scores
         for train_idx, test_idx in self.cv.split(self.X, self.y):
             grid_search.fit(self.X[train_idx], self.y[train_idx])
@@ -72,6 +84,10 @@ class LinearRegressionModel:
             scores.append(mse)
 
             print("Best Hyperparameters:", best_params)
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Training time: {execution_time}")
 
         return scores
 

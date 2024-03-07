@@ -161,3 +161,6 @@ cython_debug/
 
 # Output report files
 output/
+
+# Model architecture image
+src/ui/neural_network/model_plot.png

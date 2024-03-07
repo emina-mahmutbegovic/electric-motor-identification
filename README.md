@@ -49,7 +49,6 @@ This application provides an interactive GUI for the identification of electric 
 
 4. **Download the Dataset**
    - Download the dataset from [Kaggle](https://www.kaggle.com/datasets/hankelea/system-identification-of-an-electric-motor?resource=download).
-   - Place the downloaded file in the `data/` directory.
 
 ## Usage
 
