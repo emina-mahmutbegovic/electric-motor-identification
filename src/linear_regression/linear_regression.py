@@ -17,13 +17,14 @@ from src.dataset.data_preprocessor import DataPreprocessor
 class LinearRegressionModel:
     # Define constructor
     # Inputs:
-    # dataset - dataset for the training
+    # data - preprocessed data used for the training and evaluation
     # row_number - each *row_number* within the dataset will be selected for further processing
-    def __init__(self, dataset, preprocess_row_number=100, n_splits=5):
-        self.dataset = dataset
+    def __init__(self, data, n_splits=5):
+        #self.dataset = dataset
         self.n_splits = n_splits
 
-        self.cv, self.ss_y, self.X, self.y = DataPreprocessor(dataset, preprocess_row_number, n_splits).preprocess()
+        # Unpack preprocessed data
+        self.cv, self.ss_y, self.X, self.y = data
 
     # Train model and calculate scores
     def train_and_predict(self):
@@ -53,9 +54,6 @@ class LinearRegressionModel:
     def hyper_parameter_tuning(self):
         # Define list for storing the scores
         scores = []
-
-        # Define variable to store best model
-        bestModel: Any
 
         # Step 2: Define the model
         model = LinearRegression()

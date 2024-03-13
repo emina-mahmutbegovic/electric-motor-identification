@@ -17,7 +17,7 @@ from src.neural_network.neural_network import NeuralNetworkShape, NeuralNetworkA
 from src.ui.style.style import set_background_image, generate_label_stylesheet, generate_button_stylesheet, \
     generate_combobox_stylesheet, generate_line_edit_stylesheet, green_theme_color
 from src.util.util import save_history_reports_csv_file, save_evaluation_reports_csv_file
-
+from src.util.shared import stop_training_flag
 
 def create_form_row(label_text, widget):
     row = QHBoxLayout()
@@ -245,12 +245,14 @@ class NeuralNetworkView:
 
         # Create NeuralNetwork model
         self.neural_network = NeuralNetwork(shape, activation, loss_and_optimizer, metrics,
-                                            self.parent.transformed_dataset)
+                                            self.parent.preprocessed_data)
 
         # Build model
         self.built_neural_network_model = self.neural_network.build_model()
 
     def train_neural_network_model(self):
+        stop_training_flag.stop = False
+
         # Build neural network model
         self.build_neural_network()
 

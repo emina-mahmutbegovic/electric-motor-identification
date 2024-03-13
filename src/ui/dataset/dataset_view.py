@@ -86,7 +86,7 @@ class DatasetView:
         tab4 = QWidget()
         tab4_layout = QVBoxLayout()
         tab4.setLayout(tab4_layout)
-        # Add your correlation matrix plot here
+        # Add correlation matrix plot here
         tab4_layout.addWidget(self.parent.dataset.plot_correlation_matrix())
 
         # Tab 5: Transformed Dataset
@@ -104,9 +104,16 @@ class DatasetView:
         tab5_layout.addWidget(tab5_heading)
         tab5_layout.addWidget(transformed_model_table_view)
 
+          # Tab 6: Pearson Coefficient
+        tab6 = QWidget()
+        tab6_layout = QVBoxLayout()
+        tab6.setLayout(tab6_layout)
+        tab6_layout.addWidget(self.parent.dataset.plot_pearson_map(self.parent.pearson_coefficients))
+
         tab_widget.addTab(tab1, "Overall Information")
         tab_widget.addTab(tab2, "Element Vector Plot")
         tab_widget.addTab(tab3, "Histogram")
         tab_widget.addTab(tab4, "Correlation Matrix")
         tab_widget.addTab(tab5, "Transformed Dataset")
+        tab_widget.addTab(tab6, "Pearson Coefficients")
 

@@ -9,13 +9,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
+from src.util.shared import data_row
 
 class Dataset:
 
     # Import data upon instance creation
     def __init__(self, file_path):
         self.data = pd.read_csv(file_path)
-        self.reduced_data = self.data.iloc[::1000, :]
+        #self.reduced_data = self.data
+        self.reduced_data = self.data.iloc[::data_row, :]
 
     # Get data dimensions
     def dimensions(self):
@@ -26,11 +28,6 @@ class Dataset:
         return self.data.head()
 
     # Plots element vector at time k and k-1
-    # def plot_element_vector(self):
-    #     # Plot n_k and n_1k
-    #     fig, axes = plt.subplots(1, 2, sharex=True, sharey=True)
-    #     for c, ax in zip(['n_k', 'n_1k'], axes.flatten()):
-    #         sns.countplot(x=c, data=self.data, palette="ch:.25", ax=ax)
     def plot_element_vector(self):
         fig = plt.figure()
         canvas = FigureCanvas(fig)
@@ -98,4 +95,47 @@ class Dataset:
         # Add heading to the plot
         fig.suptitle('Correlation matrix', fontsize=12)
 
+        return canvas
+
+    
+    # Plot Pearson correlation map
+    def plot_pearson_map(self, pearson_correlations_dict):    
+        # Extract outputs
+        output1 = pearson_correlations_dict['target_cols'][0]
+        output2 = pearson_correlations_dict['target_cols'][1]
+
+        # Extract Pearson correlations dict values
+        pearson_correlations_dict_values = pearson_correlations_dict['results_dict']
+
+        # Transform dict into an array of correlations
+        correlations_output1 = []
+        correlations_output2 = []
+        input_labels = list(pearson_correlations_dict_values.keys())
+
+        for input in input_labels:
+            correlations_output1.append(pearson_correlations_dict_values[input][output1]['correlation'])
+            correlations_output2.append(pearson_correlations_dict_values[input][output2]['correlation'])
+            
+        fig, ax = plt.subplots(figsize=(20, 20))
+        canvas = FigureCanvas(fig)
+
+
+        # Set position of bar on X axis
+        barWidth = 0.4
+        r1 = np.arange(len(correlations_output1))
+        r2 = [x + barWidth for x in r1]
+
+        # Make the plot
+        ax.bar(r1, correlations_output1, color='blue', width=barWidth, edgecolor='grey', label=output1)
+        ax.bar(r2, correlations_output2, color='red', width=barWidth, edgecolor='grey', label=output2)
+
+        # Add xticks on the middle of the group bars
+        ax.set_xlabel('Input Features', fontweight='bold')
+        ax.set_ylabel('Pearson Correlation', fontweight='bold')
+        ax.set_xticks([r + barWidth/2 for r in range(len(correlations_output1))])
+        ax.set_xticklabels(input_labels, rotation=90)
+        ax.set_title('Data Correlation')
+
+        # Create legend & Show graphic
+        ax.legend()
         return canvas

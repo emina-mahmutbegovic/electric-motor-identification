@@ -13,3 +13,9 @@ class StopTrainingFlag:
 
 # Instantiate the flag at module level, so it's shared across imports
 stop_training_flag = StopTrainingFlag()
+
+# Number of data splits
+num_of_splits = 5
+
+# Data row for filtering the dataset
+data_row = 10

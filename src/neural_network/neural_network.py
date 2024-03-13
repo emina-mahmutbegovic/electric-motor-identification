@@ -31,7 +31,7 @@ class NeuralNetworkLossAndOptimizer:
 
 
 class NeuralNetwork:
-    def __init__(self, shape, activation, loss_and_optimizer, metrics, dataset, preprocess_row_number=100, n_splits=5):
+    def __init__(self, shape, activation, loss_and_optimizer, metrics, data):
         self.input_shape = shape.input_shape
         self.hidden_units = shape.hidden_units
         self.output_units = shape.output_units
@@ -42,8 +42,8 @@ class NeuralNetwork:
         self.metrics = metrics
         self.model = self.build_model()
 
-        # Get cross validator, standardize data and split data
-        self.cv, self.ss_y, self.X, self.y = DataPreprocessor(dataset, preprocess_row_number, n_splits).preprocess()
+        # Get cross validator, standardized data and split data
+        self.cv, self.ss_y, self.X, self.y = data
 
     def build_model(self):
         model = keras.Sequential()

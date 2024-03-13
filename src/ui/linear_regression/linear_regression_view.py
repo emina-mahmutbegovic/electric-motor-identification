@@ -91,7 +91,7 @@ class LinearRegressionView:
 
     def train_linear_regression_model(self, option):
         # Create LinearRegression model
-        linear_regression = LinearRegressionModel(self.parent.transformed_dataset)
+        linear_regression = LinearRegressionModel(self.parent.preprocessed_data)
 
         # Create variable for scores
         scores_formatted = None

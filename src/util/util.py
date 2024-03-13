@@ -131,13 +131,14 @@ def save_history_reports_csv_file(window, string_content):
         with open(f"{filename}_training_report.csv", 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             # Write the header
-            writer.writerow(['Loss', 'Accuracy'])
+            writer.writerow(['Loss', 'RMSE', 'Accuracy'])
 
             # Write the data
             for entry in parsed_data:
                 loss = entry['loss'][0]
+                rmse = np.sqrt(loss)
                 accuracy = entry['accuracy'][0]
-                writer.writerow([loss, accuracy])
+                writer.writerow([loss, rmse, accuracy])
 
 
 # Save csv file for evaluation reports
@@ -149,7 +150,7 @@ def save_evaluation_reports_csv_file(window, string_content):
         with open(f"{filename}_evaluation_report.csv", 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             # Write the header
-            writer.writerow(['Loss', 'Accuracy'])
+            writer.writerow(['Loss', 'Accuracy', 'Metrics'])
 
             # Write each data row
             for row in string_content:

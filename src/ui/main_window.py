@@ -11,11 +11,13 @@ from PyQt5.QtCore import Qt, QSize
 
 from src.ui.dataset.dataset_view import DatasetView
 from src.dataset.dataset import Dataset
+from src.dataset.data_preprocessor import DataPreprocessor
 from src.ui.dialog.message_dialog import MessageDialog
 from src.ui.linear_regression.linear_regression_view import LinearRegressionView
 from src.ui.neural_network.neural_network_view import NeuralNetworkView
 from src.ui.style.style import set_background_image, generate_label_stylesheet, generate_button_stylesheet
 from src.util.util import upload_csv, get_file_path
+from src.util.shared import data_row, num_of_splits
 
 
 class MainWindow(QMainWindow):
@@ -34,6 +36,12 @@ class MainWindow(QMainWindow):
         self.dataset = []
         # Define transformed data that will be used for training
         self.transformed_dataset = []
+        # Define data preprocessor
+        self.data_preprocessor = None
+        # Define preprocessed data
+        self.preprocessed_data = None
+        # Define Pearson coefficients
+        self.pearson_coefficients = None
 
         self.init_ui()
 
@@ -80,6 +88,13 @@ class MainWindow(QMainWindow):
             # Upload dataset
             self.dataset = Dataset(file_path)
             self.transformed_dataset = self.dataset.transform()
+
+            # Initialize data preprocessor
+            self.data_preprocessor = DataPreprocessor(self.transformed_dataset, data_row, num_of_splits)
+            # Preprocess data
+            self.preprocessed_data = self.data_preprocessor.preprocess()
+            # Calculate pearson coefficient
+            self.pearson_coefficients = self.data_preprocessor.pearson()
 
             # Clear upload button from initial layout
             # Remove the button from the layout
