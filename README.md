@@ -9,8 +9,10 @@ This application provides an interactive GUI for the identification of electric 
 - **Linear Regression Model Training**: Train a linear regression model on the dataset.
   - *With Hyperparameter Tuning*: Optimize the model's performance.
   - *Without Hyperparameter Tuning*: Train the model with default settings.
-- **Neural Network Configuration**: Configure and customize neural network models.
-- **Neural Network Visualization**: Display the architecture of the neural network models.
+- **FNN Neural Network Configuration**: Configure and customize FNN neural network models.
+- **FNN Neural Network Visualization**: Display the architecture of the FNN neural network models.
+- **LSTM Neural Network Configuration**: Configure and customize LSTM neural network models.
+- **LSTM Neural Network Visualization**: Display the architecture of the LSTM neural network models.
 
 ## Installation
 
