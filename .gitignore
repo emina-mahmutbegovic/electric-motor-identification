@@ -25,6 +25,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+/.DS_Store
+/src/.DS_Store
+/src/ui/.DS_Store
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -164,3 +167,4 @@ output/
 
 # Model architecture image
 src/ui/neural_network/model_plot.png
+src/ui/neural_network/lstm_model_plot.png
