@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import GridSearchCV
 from typing import Any
 
-from src.dataset.data_preprocessor import DataPreprocessor
+from src.dataset.data_preprocessor_standard import StandardDataPreprocessor
 
 
 class LinearRegressionModel:

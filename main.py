@@ -10,13 +10,13 @@ from PyQt5.QtWidgets import QApplication
 
 from src.ui.main_window import MainWindow
 
-from src.util.shared import stop_training_flag
+from src.util.shared import stop_neural_network_training_flag
 
 
 # Signal handler function
 def signal_handler(sig, frame):
     print('\nSIGINT (Ctrl+C) received. Setting a flag to stop training at the end of this epoch.')
-    stop_training_flag.stop = True
+    stop_neural_network_training_flag.stop = True
 
 
 def main():

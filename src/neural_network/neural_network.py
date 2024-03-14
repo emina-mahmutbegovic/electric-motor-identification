@@ -3,12 +3,11 @@
 # All rights reserved.
 # This software is the proprietary information of Emina Mahmutbegovic
 # Unauthorized sharing of this file is strictly prohibited
-
 from tensorflow import keras
-from tensorflow.keras import layers
+from keras import layers
 
-from src.dataset.data_preprocessor import DataPreprocessor
-from src.util.shared import stop_training_flag
+from src.dataset.data_preprocessor_standard import StandardDataPreprocessor
+from src.util.shared import stop_neural_network_training_flag
 
 
 class NeuralNetworkShape:
@@ -40,6 +39,7 @@ class NeuralNetwork:
         self.loss = loss_and_optimizer.loss
         self.optimizer = loss_and_optimizer.optimizer
         self.metrics = metrics
+
         self.model = self.build_model()
 
         # Get cross validator, standardized data and split data
@@ -56,14 +56,14 @@ class NeuralNetwork:
         return model
 
     def compile_model(self):
-        self.model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy', self.metrics])
+        self.model.compile(optimizer=self.optimizer, loss=self.loss, metrics=self.metrics)
 
     def train(self, epochs, batch_size, validation_data=None):
         # Define list for storing the history reports
         history_reports = []
 
         for train_idx, test_idx in self.cv.split(self.X, self.y):
-            if not stop_training_flag.stop:
+            if not stop_neural_network_training_flag.stop:
                 # Train model
                 history_report = self.model.fit(self.X[train_idx], self.y[train_idx], epochs=epochs,
                                                 batch_size=batch_size,
@@ -74,7 +74,7 @@ class NeuralNetwork:
                 history_reports.append(str(history_report.history))
             else:
                 # Reset flag
-                stop_training_flag.stop = False
+                stop_neural_network_training_flag.stop = False
                 break
 
         return history_reports

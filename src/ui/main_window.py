@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QSize
 
 from src.ui.dataset.dataset_view import DatasetView
 from src.dataset.dataset import Dataset
-from src.dataset.data_preprocessor import DataPreprocessor
+from src.dataset.data_preprocessor_standard import StandardDataPreprocessor
 from src.ui.dialog.message_dialog import MessageDialog
 from src.ui.linear_regression.linear_regression_view import LinearRegressionView
 from src.ui.neural_network.neural_network_view import NeuralNetworkView
@@ -37,9 +37,9 @@ class MainWindow(QMainWindow):
         # Define transformed data that will be used for training
         self.transformed_dataset = []
         # Define data preprocessor
-        self.data_preprocessor = None
+        self.data_preprocessor_standard = None
         # Define preprocessed data
-        self.preprocessed_data = None
+        self.preprocessed_data_standard = None
         # Define Pearson coefficients
         self.pearson_coefficients = None
 
@@ -89,15 +89,15 @@ class MainWindow(QMainWindow):
             self.dataset = Dataset(file_path)
             self.transformed_dataset = self.dataset.transform()
 
-            # Initialize data preprocessor
-            self.data_preprocessor = DataPreprocessor(self.transformed_dataset, data_row, num_of_splits)
+            # Initialize data preprocessors
+            self.data_preprocessor_standard = StandardDataPreprocessor(self.transformed_dataset, data_row, num_of_splits)
+
             # Preprocess data
-            self.preprocessed_data = self.data_preprocessor.preprocess()
+            self.preprocessed_data_standard = self.data_preprocessor_standard.preprocess_standard()
             # Calculate pearson coefficient
-            self.pearson_coefficients = self.data_preprocessor.pearson()
+            self.pearson_coefficients = self.data_preprocessor_standard.pearson()
 
             # Clear upload button from initial layout
-            # Remove the button from the layout
             self.layout.removeWidget(self.upload_button)
 
             # Delete the button

@@ -131,14 +131,13 @@ def save_history_reports_csv_file(window, string_content):
         with open(f"{filename}_training_report.csv", 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             # Write the header
-            writer.writerow(['Loss', 'RMSE', 'Accuracy'])
+            writer.writerow(['Loss', 'RMSE'])
 
             # Write the data
             for entry in parsed_data:
                 loss = entry['loss'][0]
                 rmse = np.sqrt(loss)
-                accuracy = entry['accuracy'][0]
-                writer.writerow([loss, rmse, accuracy])
+                writer.writerow([loss, rmse])
 
 
 # Save csv file for evaluation reports
@@ -155,3 +154,25 @@ def save_evaluation_reports_csv_file(window, string_content):
             # Write each data row
             for row in string_content:
                 writer.writerow(row)
+
+# Save csv file for history reports
+def save_history_and_val_reports_csv_file(window, string_content):
+    filename = open_save_file_dialog(window)
+
+    # Parse the string into actual Python dictionaries using ast.literal_eval
+    parsed_data = [ast.literal_eval(item) for item in string_content]
+
+    if filename:
+        # Create a CSV file
+        with open(f"{filename}_training_report.csv", 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            # Write the header
+            writer.writerow(['Loss', 'RMSE', 'Validation loss', 'Validation RMSE'])
+
+            # Write the data
+            for entry in parsed_data:
+                loss = entry['loss'][0]
+                rmse = np.sqrt(loss)
+                val_loss = entry['val_loss'][0]
+                val_rmse = np.sqrt(val_loss)
+                writer.writerow([loss, rmse, val_loss, val_rmse])
