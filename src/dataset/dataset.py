@@ -24,6 +24,9 @@ class Dataset:
         # Set currents id_k and iq_k as inputs
         self.input_cols = ['id_k', 'iq_k']
 
+        # Set all inputs
+        self.all_inputs = [c for c in self.data if c not in self.target_cols]
+
         self.input_id = self.reduced_data['id_k'].values
         self.input_iq = self.reduced_data['iq_k'].values
 
@@ -32,6 +35,10 @@ class Dataset:
 
         # Set input and target values
         self.X, self.y = self.reduced_data[self.input_cols].values, self.reduced_data[self.target_cols].values
+
+        # Define all inputs and outputs for Pearson and Spearman
+        self.inputs = self.data[self.all_inputs].values
+        self.outputs = self.data[self.target_cols].values
 
     # Get data dimensions
     def dimensions(self):
@@ -119,22 +126,22 @@ class Dataset:
     
     def pearson(self):
         # Check if data is existing
-        if(self.X is None or self.y is None or not self.input_cols or not self.target_cols):
+        if(self.inputs is None or self.outputs is None or not self.all_inputs or not self.target_cols):
             print("ERROR: Data not preprocessed. Cannot calculate Pearson's coefficient.")
             return
 
         results_dict = {}
 
-        for i in range(self.X.shape[1]):  # For each input feature
-            for j in range(self.y.shape[1]):  # For each output feature
-                corr, p_val = pearsonr(self.X[:, i], self.y[:, j])
+        for i in range(self.inputs.shape[1]):  # For each input feature
+            for j in range(self.outputs.shape[1]):  # For each output feature
+                corr, p_val = pearsonr(self.inputs[:, i], self.outputs[:, j])
 
                 # Update dictionary
-                if self.input_cols[i] not in results_dict:
-                    results_dict[self.input_cols[i]] = {}
+                if self.all_inputs[i] not in results_dict:
+                    results_dict[self.all_inputs[i]] = {}
 
                 # Update dictionary
-                results_dict[self.input_cols[i]][self.target_cols[j]] = {"correlation": corr, "p_value": p_val}
+                results_dict[self.all_inputs[i]][self.target_cols[j]] = {"correlation": corr, "p_value": p_val}
 
         return {
             'target_cols': self.target_cols,
@@ -143,22 +150,22 @@ class Dataset:
     
     def spearman(self):
         # Check if data is existing
-        if(self.X is None or self.y is None or not self.input_cols or not self.target_cols):
-            print("ERROR: Data not preprocessed. Cannot calculate Spearman's coefficient.")
+        if(self.inputs is None or self.outputs is None or not self.all_inputs or not self.target_cols):
+            print("ERROR: Data not preprocessed. Cannot calculate Pearson's coefficient.")
             return
 
         results_dict = {}
 
-        for i in range(self.X.shape[1]):  # For each input feature
-            for j in range(self.y.shape[1]):  # For each output feature
-                corr, p_val = spearmanr(self.X[:, i], self.y[:, j])
+        for i in range(self.inputs.shape[1]):  # For each input feature
+            for j in range(self.outputs.shape[1]):  # For each output feature
+                corr, p_val = spearmanr(self.inputs[:, i], self.outputs[:, j])
 
                 # Update dictionary
-                if self.input_cols[i] not in results_dict:
-                    results_dict[self.input_cols[i]] = {}
+                if self.all_inputs[i] not in results_dict:
+                    results_dict[self.all_inputs[i]] = {}
 
                 # Update dictionary
-                results_dict[self.input_cols[i]][self.target_cols[j]] = {"correlation": corr, "p_value": p_val}
+                results_dict[self.all_inputs[i]][self.target_cols[j]] = {"correlation": corr, "p_value": p_val}
 
         return {
             'target_cols': self.target_cols,

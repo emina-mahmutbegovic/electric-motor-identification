@@ -5,6 +5,7 @@
 # Unauthorized sharing of this file is strictly prohibited
 import numpy as np
 import joblib
+from keras.models import Sequential
 from keras.layers import Dense, ConvLSTM1D, InputLayer
 from src.dataset.data_preprocessor_lstm import LSTMDataPreprocessor
 from src.util.shared import stop_neural_network_training_flag
@@ -52,8 +53,10 @@ class ConvLSTMNetwork:
     # Build model
     def build_model(self):
         # Define the ConvLSTM model
+        self.model = Sequential()
+
         self.model.add(InputLayer(input_shape=(1,1, self.num_inputs)))
-        self.model.add(ConvLSTM1D(filters=self.num_of_filters, kernel_size=self.kernel_size, padding='SAME', return_sequences=True, activation=self.conv_activation,
+        self.model.add(ConvLSTM1D(filters=int(self.num_of_filters), kernel_size=int(self.kernel_size), padding='SAME', return_sequences=True, activation=self.conv_activation,
                                   go_backwards=True)) 
 
         self.model.add(Dense(self.num_outputs, activation=self.activation_function))

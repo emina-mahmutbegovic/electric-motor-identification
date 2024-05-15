@@ -15,18 +15,17 @@ from keras.src.utils import plot_model
 from src.neural_network.neural_network import NeuralNetworkShape, NeuralNetworkActivation, \
     NeuralNetworkLossAndOptimizer, NeuralNetwork
 from src.lstm_network.lstm_network import LSTMNetwork
-from src.dataset.data_preprocessor_lstm import LSTMDataPreprocessor
+from src.lstm_network.conv_lstm_network import ConvLSTMNetwork
 
 from src.ui.style.style import set_background_image, generate_label_stylesheet, generate_button_stylesheet, \
     generate_combobox_stylesheet, generate_line_edit_stylesheet
 
 from src.util.util import save_history_reports_csv_file, save_evaluation_reports_csv_file, save_history_and_val_reports_csv_file
 from src.util.shared import (stop_neural_network_training_flag, activation_functions, 
-                             loss_functions, metrics, optimizers, data_row, regressors)
+                             loss_functions, metrics, optimizers)
 
 from src.ui.neural_network.config.neural_network_config import NeuralNetworkConfig
-from src.ui.neural_network.config.lstm_config import LSTMConfig
-from src.dataset.delayed_input import Regressor
+from src.ui.neural_network.config.lstm_config import LSTMConfig, LSTMNetworkType
 
 def create_form_row(label_text, widget):
     row = QHBoxLayout()
@@ -66,7 +65,7 @@ class NeuralNetworkView:
         self.neural_network_display_label = None
         self.lstm_display_label = None
 
-        self.selected_option = Regressor.NONE
+        self.selected_option = LSTMNetworkType.BASIC
 
         self.init_ui()
 
@@ -108,11 +107,11 @@ class NeuralNetworkView:
             pixmap = QPixmap(neural_network_model_path)
             self.neural_network_display_label.setPixmap(pixmap)
         
-        # if self.lstm_display_tab_central_widget is not None and self.lstm_network.model is not None:
-        #     self.generate_neural_network_plot(self.lstm_network.model, lstm_network_model_path)
+        if self.lstm_display_tab_central_widget is not None and self.built_lstm_network_model is not None:
+            self.generate_neural_network_plot(self.built_lstm_network_model, lstm_network_model_path)
 
-        #     pixmap = QPixmap(lstm_network_model_path)
-        #     self.lstm_display_label.setPixmap(pixmap)
+            pixmap = QPixmap(lstm_network_model_path)
+            self.lstm_display_label.setPixmap(pixmap)
 
     # Neural Network Configuration Tab
     def init_configuration_tab(self):
@@ -301,6 +300,15 @@ class NeuralNetworkView:
         self.lstm_form_layout.addLayout(
             create_form_row("Epochs:", self.lstm_config.epochs_edit))
         
+        # Define LSTM network type
+        self.lstm_config.lstm_network_type = QComboBox(self.parent)
+        self.lstm_config.lstm_network_type.addItem("Basic", LSTMNetworkType.BASIC)
+        self.lstm_config.lstm_network_type.addItem("ConvLSTM", LSTMNetworkType.CONVLSTM)
+        self.lstm_form_layout.addLayout(
+            create_form_row("LSTM Network Type:", self.lstm_config.lstm_network_type))
+        # Bind the combobox selection change event
+        self.lstm_config.lstm_network_type.activated.connect(self.lstm_network_type_changed)
+        
         # Num of units
         self.lstm_config.num_of_units_edit = QLineEdit(self.parent)
         # Set default value
@@ -366,6 +374,9 @@ class NeuralNetworkView:
         submit_button.clicked.connect(lambda: self.train_lstm_network())
 
         self.lstm_form_layout.addWidget(submit_button)
+
+    def lstm_network_type_changed(self, index):
+        self.selected_option = self.lstm_config.lstm_network_type.itemData(index)
 
     def build_neural_network(self):
         # Get neural network configuration
@@ -475,12 +486,18 @@ class NeuralNetworkView:
 
         metrics = self.lstm_config.metrics_combo.currentText()
 
-        # Create and build LSTM model
-        self.lstm_network = LSTMNetwork(num_of_units, activation, loss_and_optimizer, metrics,
-                                             self.parent.dataset)
-        
+        if self.selected_option == LSTMNetworkType.BASIC:
+            # Create and build LSTM model
+            self.lstm_network = LSTMNetwork(num_of_units, activation, loss_and_optimizer, metrics,
+                                                self.parent.dataset)
+        elif self.selected_option == LSTMNetworkType.CONVLSTM:
+            # Create and build ConvLSTM model
+            self.lstm_network = ConvLSTMNetwork(num_of_units, activation, loss_and_optimizer, metrics,
+                                                self.parent.dataset, num_of_filters, kernel_size, conv_activation)
         # Compile model
         self.lstm_network.compile_model()
+
+        self.built_lstm_network_model = self.lstm_network.model
         
     def train_lstm_network(self):
         stop_neural_network_training_flag.stop = False

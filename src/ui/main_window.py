@@ -93,21 +93,6 @@ class MainWindow(QMainWindow):
             #self.pearson_coefficients = self.dataset.pearson()
             # Calculate Spearman coefficients
             #self.spearman_coefficients = self.dataset.spearman()
-            
-            # Plot input data
-            #self.dataset.plot_results(self.dataset.output_id_k1, self.dataset.output_iq_k1,
-                                      #'Variable id_k1', 'Variable iq_k1')
-
-            # # Initialize data preprocessors
-            #self.data_preprocessor_scaler = LSTMDataPreprocessor(self.dataset.reduced_data)
-
-            # # Preprocess data
-            #self.preprocessed_data_standard = self.data_preprocessor_standard.preprocess_standard()
-
-            #scaler, df, id_k_scaled, iq_k_scaled = self.data_preprocessor_scaler.preprocess_min_max()
-
-            # # Plot preprocessed data
-            #self.dataset.plot_results(id_k_scaled, iq_k_scaled)
 
             # Clear upload button from initial layout
             self.layout.removeWidget(self.upload_button)

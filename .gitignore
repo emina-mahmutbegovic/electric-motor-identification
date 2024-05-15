@@ -168,3 +168,8 @@ output/
 # Model architecture image
 src/ui/neural_network/model_plot.png
 src/ui/neural_network/lstm_model_plot.png
+
+# Ignore exported models and variables
+*.h5
+*.save
+*.npy
