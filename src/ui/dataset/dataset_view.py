@@ -82,17 +82,10 @@ class DatasetView:
         tab3.setLayout(tab3_layout)
         tab3_layout.addWidget(self.parent.dataset.plot_histogram_nk())
 
-        # Tab 4: Correlation Matrix
+        # Tab 5: Transformed Dataset
         tab4 = QWidget()
         tab4_layout = QVBoxLayout()
         tab4.setLayout(tab4_layout)
-        # Add correlation matrix plot here
-        tab4_layout.addWidget(self.parent.dataset.plot_correlation_matrix())
-
-        # Tab 5: Transformed Dataset
-        tab5 = QWidget()
-        tab5_layout = QVBoxLayout()
-        tab5.setLayout(tab5_layout)
         # Initialize transformed_dataset model
         transformed_model = DataFrameModel(self.parent.transformed_dataset.head())
         transformed_model_table_view = QTableView()
@@ -101,27 +94,26 @@ class DatasetView:
         # Set heading
         tab5_heading = QLabel('Transformed dataset sample:')
         tab5_heading.setStyleSheet(bold_label_style)
-        tab5_layout.addWidget(tab5_heading)
-        tab5_layout.addWidget(transformed_model_table_view)
+        tab4_layout.addWidget(tab5_heading)
+        tab4_layout.addWidget(transformed_model_table_view)
 
         # Tab 6: Pearson Coefficient
+        tab5 = QWidget()
+        tab5_layout = QVBoxLayout()
+        tab5.setLayout(tab5_layout)
+        tab5_layout.addWidget(self.parent.dataset.plot_correlation_map(self.parent.pearson_coefficients))
+
+        # Tab 6: Spearman Coefficient
         tab6 = QWidget()
         tab6_layout = QVBoxLayout()
         tab6.setLayout(tab6_layout)
-        tab6_layout.addWidget(self.parent.dataset.plot_correlation_map(self.parent.pearson_coefficients))
-
-        # Tab 6: Spearman Coefficient
-        tab7 = QWidget()
-        tab7_layout = QVBoxLayout()
-        tab7.setLayout(tab7_layout)
-        tab7_layout.addWidget(self.parent.dataset.plot_correlation_map(self.parent.spearman_coefficients))
+        tab6_layout.addWidget(self.parent.dataset.plot_correlation_map(self.parent.spearman_coefficients))
 
         tab_widget.addTab(tab1, "Overall Information")
         tab_widget.addTab(tab2, "Element Vector Plot")
         tab_widget.addTab(tab3, "Histogram")
-        tab_widget.addTab(tab4, "Correlation Matrix")
-        tab_widget.addTab(tab5, "Transformed Dataset")
-        tab_widget.addTab(tab6, "Pearson Coefficients")
-        tab_widget.addTab(tab7, "Spearman Coefficients")
+        tab_widget.addTab(tab4, "Transformed Dataset")
+        tab_widget.addTab(tab5, "Pearson Coefficients")
+        tab_widget.addTab(tab6, "Spearman Coefficients")
 
 

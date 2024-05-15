@@ -16,16 +16,13 @@ class Dataset:
     # Import data upon instance creation
     def __init__(self, file_path):
         self.data = pd.read_csv(file_path)
-        #self.reduced_data = self.data
         self.reduced_data = self.data.iloc[:2000]
 
         # Set currents id_k1 and iq_k1 as targets
         self.target_cols = ['id_k1', 'iq_k1']
 
-        # Set currents as inputs
+        # Set currents id_k and iq_k as inputs
         self.input_cols = ['id_k', 'iq_k']
-        # Set remaining data as inputs
-        #self.input_cols = [c for c in self.reduced_data if c not in self.target_cols]
 
         self.input_id = self.reduced_data['id_k'].values
         self.input_iq = self.reduced_data['iq_k'].values
@@ -168,28 +165,6 @@ class Dataset:
             'results_dict': results_dict
         }
 
-    # Plot correlation matrix
-    def plot_correlation_matrix(self):
-        fig = plt.figure(figsize=(20, 20))
-        canvas = FigureCanvas(fig)
-
-        corr = self.reduced_data.corr()
-        # Generate a mask for the upper triangle
-        mask = np.zeros_like(corr, dtype=bool)
-        mask[np.triu_indices_from(mask)] = True
-
-        # Generate a custom diverging colormap
-        cmap = sns.diverging_palette(250, 15, s=75, l=40, n=9, center="dark", as_cmap=True)
-
-        sns.heatmap(corr, mask=mask, cmap=cmap, center=0,
-                        square=True, linewidths=.5, cbar_kws={"shrink": .5})
-
-        # Add heading to the plot
-        fig.suptitle('Correlation matrix', fontsize=12)
-
-        return canvas
-
-    
     # Plot correlation map
     def plot_correlation_map(self, correlations_dict):    
         # Extract outputs

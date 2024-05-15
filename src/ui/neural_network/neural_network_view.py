@@ -188,22 +188,6 @@ class NeuralNetworkView:
         self.neural_network_config.metrics_combo.addItems(metrics)
         self.neural_network_form_layout.addLayout(create_form_row("Metrics:", self.neural_network_config.metrics_combo))
 
-        # Regressor
-        self.neural_network_config.regressor_combo = QComboBox(self.parent)
-        self.neural_network_config.regressor_combo.addItem("None", Regressor.NONE)
-        self.neural_network_config.regressor_combo.addItem("u(k-1)", Regressor.SINGLE_INPUT)
-        self.neural_network_config.regressor_combo.addItem("u(k-1), u(k-2)", Regressor.DOUBLE_INPUT)
-        self.neural_network_config.regressor_combo.addItem("u(k-3), u(k-5)", Regressor.THREE_FIVE)
-        self.neural_network_config.regressor_combo.addItem("u(k-2), u(k-3), u(k-4), u(k-5)", Regressor.TWO_THREE_FOUR_FIVE)
-        self.neural_network_config.regressor_combo.addItem("u(k-3), u(k-4), u(k-5)", Regressor.THREE_FOUR_FIVE)
-        self.neural_network_config.regressor_combo.addItem("u(k-7), u(k-11)", Regressor.SEVEN_ELEVEN)
-        self.neural_network_config.regressor_combo.addItem("u(k-6), u(k-8), u(k-15)", Regressor.SIX_EIGHT_FIFTEEN)
-        self.neural_network_config.regressor_combo.addItem("u(k-2), u(k-10), u(k-20)", Regressor.TWO_TEN_TWELVE)
-        self.neural_network_form_layout.addLayout(create_form_row("Regressors:", self.neural_network_config.regressor_combo))
-
-        # Connect the signal of selection change to the slot function
-        self.neural_network_config.regressor_combo.currentIndexChanged.connect(self.selection_changed)
-
         # Modify the widgets here to set text color and font
         for widget in self.configuration_tab_central_widget.findChildren(QLabel):
             widget.setStyleSheet(generate_label_stylesheet("bold", "white"))
@@ -220,11 +204,6 @@ class NeuralNetworkView:
         submit_button.clicked.connect(lambda: self.train_neural_network_model())
 
         self.neural_network_form_layout.addWidget(submit_button)
-
-    def selection_changed(self, index):
-        # Get the currently selected option
-        self.selected_option = self.neural_network_config.regressor_combo.currentData()
-        print("Selected option:", self.selected_option)
 
     # Neural Network Display Tab
     def init_display_tab(self):
@@ -344,25 +323,11 @@ class NeuralNetworkView:
         self.lstm_form_layout.addLayout(
             create_form_row("Kernel Size (Conv layer):", self.lstm_config.kernel_size_edit))
         
-
         # CNN activation function
         self.lstm_config.conv_activation_function = QComboBox(self.parent)
         self.lstm_config.conv_activation_function.addItems(activation_functions)
         self.lstm_form_layout.addLayout(
             create_form_row("Conv layer Activation Function:", self.lstm_config.conv_activation_function))
-        
-        # Regressor
-        self.lstm_config.regressor_combo = QComboBox(self.parent)
-        self.lstm_config.regressor_combo.addItem("None", Regressor.NONE)
-        self.lstm_config.regressor_combo.addItem("u(k-1)", Regressor.SINGLE_INPUT)
-        self.lstm_config.regressor_combo.addItem("u(k-1), u(k-2)", Regressor.DOUBLE_INPUT)
-        self.lstm_config.regressor_combo.addItem("u(k-3), u(k-5)", Regressor.THREE_FIVE)
-        self.lstm_config.regressor_combo.addItem("u(k-2), u(k-3), u(k-4), u(k-5)", Regressor.TWO_THREE_FOUR_FIVE)
-        self.lstm_config.regressor_combo.addItem("u(k-3), u(k-4), u(k-5)", Regressor.THREE_FOUR_FIVE)
-        self.lstm_config.regressor_combo.addItem("u(k-7), u(k-11)", Regressor.SEVEN_ELEVEN)
-        self.lstm_config.regressor_combo.addItem("u(k-6), u(k-8), u(k-15)", Regressor.SIX_EIGHT_FIFTEEN)
-        self.lstm_config.regressor_combo.addItem("u(k-2), u(k-10), u(k-20)", Regressor.TWO_TEN_TWELVE)
-        self.lstm_form_layout.addLayout(create_form_row("Regressors:", self.lstm_config.regressor_combo))
 
         # Output activation function
         self.lstm_config.activation_function = QComboBox(self.parent)
@@ -437,7 +402,7 @@ class NeuralNetworkView:
 
         # Create NeuralNetwork model
         self.neural_network = NeuralNetwork(shape, activation, loss_and_optimizer, metrics,
-                                            self.parent.dataset, self.selected_option)
+                                            self.parent.dataset)
 
         # Build model
         self.built_neural_network_model = self.neural_network.build_model()
@@ -468,9 +433,6 @@ class NeuralNetworkView:
             eval_reports = self.neural_network.evaluate()
 
             print(f"Training time: {execution_time//60}")
-
-            # Predict
-            self.neural_network.predict()
 
             # Download reports
             # Prompt report download
@@ -515,7 +477,7 @@ class NeuralNetworkView:
 
         # Create and build LSTM model
         self.lstm_network = LSTMNetwork(num_of_units, activation, loss_and_optimizer, metrics,
-                                             self.parent.dataset, self.selected_option, int(num_of_filters), int(kernel_size), conv_activation)
+                                             self.parent.dataset)
         
         # Compile model
         self.lstm_network.compile_model()
