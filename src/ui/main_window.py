@@ -11,13 +11,12 @@ from PyQt5.QtCore import Qt, QSize
 
 from src.ui.dataset.dataset_view import DatasetView
 from src.dataset.dataset import Dataset
-from src.dataset.data_preprocessor_standard import StandardDataPreprocessor
+from src.dataset.data_preprocessor_lstm import LSTMDataPreprocessor
 from src.ui.dialog.message_dialog import MessageDialog
 from src.ui.linear_regression.linear_regression_view import LinearRegressionView
 from src.ui.neural_network.neural_network_view import NeuralNetworkView
 from src.ui.style.style import set_background_image, generate_label_stylesheet, generate_button_stylesheet
 from src.util.util import upload_csv, get_file_path
-from src.util.shared import data_row, num_of_splits
 
 
 class MainWindow(QMainWindow):
@@ -42,6 +41,8 @@ class MainWindow(QMainWindow):
         self.preprocessed_data_standard = None
         # Define Pearson coefficients
         self.pearson_coefficients = None
+        # Define Spearman coefficitens
+        self.spearman_coefficients = None
 
         self.init_ui()
 
@@ -87,15 +88,26 @@ class MainWindow(QMainWindow):
         if file_path:
             # Upload dataset
             self.dataset = Dataset(file_path)
-            self.transformed_dataset = self.dataset.transform()
 
-            # Initialize data preprocessors
-            self.data_preprocessor_standard = StandardDataPreprocessor(self.transformed_dataset, data_row, num_of_splits)
+            # Calculate Pearson coefficients
+            #self.pearson_coefficients = self.dataset.pearson()
+            # Calculate Spearman coefficients
+            #self.spearman_coefficients = self.dataset.spearman()
+            
+            # Plot input data
+            #self.dataset.plot_results(self.dataset.output_id_k1, self.dataset.output_iq_k1,
+                                      #'Variable id_k1', 'Variable iq_k1')
 
-            # Preprocess data
-            self.preprocessed_data_standard = self.data_preprocessor_standard.preprocess_standard()
-            # Calculate pearson coefficient
-            self.pearson_coefficients = self.data_preprocessor_standard.pearson()
+            # # Initialize data preprocessors
+            #self.data_preprocessor_scaler = LSTMDataPreprocessor(self.dataset.reduced_data)
+
+            # # Preprocess data
+            #self.preprocessed_data_standard = self.data_preprocessor_standard.preprocess_standard()
+
+            #scaler, df, id_k_scaled, iq_k_scaled = self.data_preprocessor_scaler.preprocess_min_max()
+
+            # # Plot preprocessed data
+            #self.dataset.plot_results(id_k_scaled, iq_k_scaled)
 
             # Clear upload button from initial layout
             self.layout.removeWidget(self.upload_button)

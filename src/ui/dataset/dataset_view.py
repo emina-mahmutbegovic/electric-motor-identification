@@ -104,11 +104,17 @@ class DatasetView:
         tab5_layout.addWidget(tab5_heading)
         tab5_layout.addWidget(transformed_model_table_view)
 
-          # Tab 6: Pearson Coefficient
+        # Tab 6: Pearson Coefficient
         tab6 = QWidget()
         tab6_layout = QVBoxLayout()
         tab6.setLayout(tab6_layout)
-        tab6_layout.addWidget(self.parent.dataset.plot_pearson_map(self.parent.pearson_coefficients))
+        tab6_layout.addWidget(self.parent.dataset.plot_correlation_map(self.parent.pearson_coefficients))
+
+        # Tab 6: Spearman Coefficient
+        tab7 = QWidget()
+        tab7_layout = QVBoxLayout()
+        tab7.setLayout(tab7_layout)
+        tab7_layout.addWidget(self.parent.dataset.plot_correlation_map(self.parent.spearman_coefficients))
 
         tab_widget.addTab(tab1, "Overall Information")
         tab_widget.addTab(tab2, "Element Vector Plot")
@@ -116,4 +122,6 @@ class DatasetView:
         tab_widget.addTab(tab4, "Correlation Matrix")
         tab_widget.addTab(tab5, "Transformed Dataset")
         tab_widget.addTab(tab6, "Pearson Coefficients")
+        tab_widget.addTab(tab7, "Spearman Coefficients")
+
 

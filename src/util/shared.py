@@ -6,6 +6,8 @@
 
 # This module acts as a shared resource between different parts of the application.
 
+from src.dataset.delayed_input import Regressor
+
 class StopTrainingFlag:
     def __init__(self):
         self.stop = False
@@ -32,3 +34,7 @@ loss_functions = ["mean_squared_error", "mean_absolute_error", "mean_squared_log
 
 # Metrics
 metrics = ["mean_squared_error", "mean_absolute_error", "mean_absolute_percentage_error"]
+
+# Regressors
+regressors = [["None", Regressor.NONE], ["u(k-1)", Regressor.SINGLE_INPUT], 
+              ["u(k-1), u(k-2)", Regressor.DOUBLE_INPUT], ["u(k-1), y(k-1)", Regressor.THREE_FIVE]]

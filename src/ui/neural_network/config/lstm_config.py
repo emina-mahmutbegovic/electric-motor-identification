@@ -13,4 +13,7 @@ class LSTMConfig(NeuralNetworkConfigBase):
         self.num_of_units = None
         self.num_of_units_edit = None
         self.activation_function = None
-        self.look_back_edit = None
+        self.regressor_combo = None
+        self.num_of_filters_edit = None
+        self.kernel_size_edit = None
+        self.conv_activation_function = None

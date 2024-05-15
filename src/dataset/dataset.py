@@ -5,11 +5,11 @@
 # Unauthorized sharing of this file is strictly prohibited
 import numpy as np
 import pandas as pd
+from scipy.stats import pearsonr
+from scipy.stats import spearmanr
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
-from src.util.shared import data_row
 
 class Dataset:
 
@@ -17,7 +17,24 @@ class Dataset:
     def __init__(self, file_path):
         self.data = pd.read_csv(file_path)
         #self.reduced_data = self.data
-        self.reduced_data = self.data.iloc[::data_row, :]
+        self.reduced_data = self.data.iloc[:2000]
+
+        # Set currents id_k1 and iq_k1 as targets
+        self.target_cols = ['id_k1', 'iq_k1']
+
+        # Set currents as inputs
+        self.input_cols = ['id_k', 'iq_k']
+        # Set remaining data as inputs
+        #self.input_cols = [c for c in self.reduced_data if c not in self.target_cols]
+
+        self.input_id = self.reduced_data['id_k'].values
+        self.input_iq = self.reduced_data['iq_k'].values
+
+        self.output_id_k1 = self.reduced_data['id_k1'].values
+        self.output_iq_k1 = self.reduced_data['iq_k1'].values
+
+        # Set input and target values
+        self.X, self.y = self.reduced_data[self.input_cols].values, self.reduced_data[self.target_cols].values
 
     # Get data dimensions
     def dimensions(self):
@@ -41,6 +58,26 @@ class Dataset:
         fig.suptitle('Element vector plot at time k and k-1', fontsize=12)
 
         return canvas
+    
+    def plot_results(self, var1, var2, label1='Variable id_k', label2='Variable iq_k'): 
+        time = np.linspace(0, 10, 100)  # 100 time points from 0 to 10
+        # Create a plot
+        plt.figure(figsize=(10, 5))  # Set the figure size
+
+        # Plot both variables
+        plt.plot(time, var1[:100], label=label1, color='blue')
+        plt.plot(time, var2[:100], label=label2, color='red')
+
+        # Adding title and labels
+        plt.title('The first 100 target variables over time')
+        plt.xlabel('Time')
+        plt.ylabel('Value')
+
+        # Add a legend to the plot
+        plt.legend()
+
+        # Show the plot
+        plt.show()
 
     # Plot histogram against element vector
     def plot_histogram_nk(self):
@@ -75,6 +112,61 @@ class Dataset:
         return self.data.assign(sin_eps_k=lambda df: np.sin(df.epsilon_k),
                                 cos_eps_k=lambda df: np.cos(df.epsilon_k),
                                 i_norm=lambda df: np.sqrt(df.id_k ** 2 + df.iq_k ** 2)).drop('epsilon_k', axis=1)
+    
+    # Split data to inputs and targets
+    def split_data(self, data):
+        # Set input and target values
+        X, y = data[self.input_cols].values, data[self.target_cols].values
+        
+        return [X, y]
+    
+    def pearson(self):
+        # Check if data is existing
+        if(self.X is None or self.y is None or not self.input_cols or not self.target_cols):
+            print("ERROR: Data not preprocessed. Cannot calculate Pearson's coefficient.")
+            return
+
+        results_dict = {}
+
+        for i in range(self.X.shape[1]):  # For each input feature
+            for j in range(self.y.shape[1]):  # For each output feature
+                corr, p_val = pearsonr(self.X[:, i], self.y[:, j])
+
+                # Update dictionary
+                if self.input_cols[i] not in results_dict:
+                    results_dict[self.input_cols[i]] = {}
+
+                # Update dictionary
+                results_dict[self.input_cols[i]][self.target_cols[j]] = {"correlation": corr, "p_value": p_val}
+
+        return {
+            'target_cols': self.target_cols,
+            'results_dict': results_dict
+        }
+    
+    def spearman(self):
+        # Check if data is existing
+        if(self.X is None or self.y is None or not self.input_cols or not self.target_cols):
+            print("ERROR: Data not preprocessed. Cannot calculate Spearman's coefficient.")
+            return
+
+        results_dict = {}
+
+        for i in range(self.X.shape[1]):  # For each input feature
+            for j in range(self.y.shape[1]):  # For each output feature
+                corr, p_val = spearmanr(self.X[:, i], self.y[:, j])
+
+                # Update dictionary
+                if self.input_cols[i] not in results_dict:
+                    results_dict[self.input_cols[i]] = {}
+
+                # Update dictionary
+                results_dict[self.input_cols[i]][self.target_cols[j]] = {"correlation": corr, "p_value": p_val}
+
+        return {
+            'target_cols': self.target_cols,
+            'results_dict': results_dict
+        }
 
     # Plot correlation matrix
     def plot_correlation_matrix(self):
@@ -98,23 +190,23 @@ class Dataset:
         return canvas
 
     
-    # Plot Pearson correlation map
-    def plot_pearson_map(self, pearson_correlations_dict):    
+    # Plot correlation map
+    def plot_correlation_map(self, correlations_dict):    
         # Extract outputs
-        output1 = pearson_correlations_dict['target_cols'][0]
-        output2 = pearson_correlations_dict['target_cols'][1]
+        output1 = correlations_dict['target_cols'][0]
+        output2 = correlations_dict['target_cols'][1]
 
         # Extract Pearson correlations dict values
-        pearson_correlations_dict_values = pearson_correlations_dict['results_dict']
+        correlations_dict_values = correlations_dict['results_dict']
 
         # Transform dict into an array of correlations
         correlations_output1 = []
         correlations_output2 = []
-        input_labels = list(pearson_correlations_dict_values.keys())
+        input_labels = list(correlations_dict_values.keys())
 
         for input in input_labels:
-            correlations_output1.append(pearson_correlations_dict_values[input][output1]['correlation'])
-            correlations_output2.append(pearson_correlations_dict_values[input][output2]['correlation'])
+            correlations_output1.append(correlations_dict_values[input][output1]['correlation'])
+            correlations_output2.append(correlations_dict_values[input][output2]['correlation'])
             
         fig, ax = plt.subplots(figsize=(20, 20))
         canvas = FigureCanvas(fig)
@@ -131,7 +223,7 @@ class Dataset:
 
         # Add xticks on the middle of the group bars
         ax.set_xlabel('Input Features', fontweight='bold')
-        ax.set_ylabel('Pearson Correlation', fontweight='bold')
+        ax.set_ylabel('Correlation', fontweight='bold')
         ax.set_xticks([r + barWidth/2 for r in range(len(correlations_output1))])
         ax.set_xticklabels(input_labels, rotation=90)
         ax.set_title('Data Correlation')
